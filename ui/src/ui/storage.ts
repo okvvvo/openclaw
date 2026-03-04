@@ -17,10 +17,13 @@ export type UiSettings = {
   themeMode: ThemeMode;
   chatFocusMode: boolean;
   chatShowThinking: boolean;
+  chatSessionsActiveMinutes: number; // Chat sessions sidebar refresh window (0 = all)
   splitRatio: number; // Sidebar split ratio (0.4 to 0.7, default 0.6)
   navCollapsed: boolean; // Collapsible sidebar state
   navWidth: number; // Sidebar width when expanded (240–400px)
   navGroupsCollapsed: Record<string, boolean>; // Which nav groups are collapsed
+  pinnedSessionKeys: string[]; // Pinned chat sessions in sidebar
+  sessionLabels: Record<string, string>; // Local chat labels override
   locale?: string;
 };
 
@@ -131,10 +134,13 @@ export function loadSettings(): UiSettings {
     themeMode: "system",
     chatFocusMode: false,
     chatShowThinking: true,
+    chatSessionsActiveMinutes: 120,
     splitRatio: 0.6,
     navCollapsed: false,
     navWidth: 220,
     navGroupsCollapsed: {},
+    pinnedSessionKeys: [],
+    sessionLabels: {},
   };
 
   try {
@@ -173,6 +179,13 @@ export function loadSettings(): UiSettings {
         typeof parsed.chatShowThinking === "boolean"
           ? parsed.chatShowThinking
           : defaults.chatShowThinking,
+      chatSessionsActiveMinutes:
+        typeof parsed.chatSessionsActiveMinutes === "number" &&
+        Number.isFinite(parsed.chatSessionsActiveMinutes) &&
+        parsed.chatSessionsActiveMinutes >= 0 &&
+        parsed.chatSessionsActiveMinutes <= 10080
+          ? Math.round(parsed.chatSessionsActiveMinutes)
+          : defaults.chatSessionsActiveMinutes,
       splitRatio:
         typeof parsed.splitRatio === "number" &&
         parsed.splitRatio >= 0.4 &&
@@ -189,6 +202,17 @@ export function loadSettings(): UiSettings {
         typeof parsed.navGroupsCollapsed === "object" && parsed.navGroupsCollapsed !== null
           ? parsed.navGroupsCollapsed
           : defaults.navGroupsCollapsed,
+      pinnedSessionKeys: Array.isArray(parsed.pinnedSessionKeys)
+        ? parsed.pinnedSessionKeys.filter((key): key is string => typeof key === "string" && !!key)
+        : defaults.pinnedSessionKeys,
+      sessionLabels:
+        typeof parsed.sessionLabels === "object" && parsed.sessionLabels !== null
+          ? Object.fromEntries(
+              Object.entries(parsed.sessionLabels).filter(
+                ([k, v]) => typeof k === "string" && !!k && typeof v === "string" && !!v,
+              ),
+            )
+          : defaults.sessionLabels,
       locale: isSupportedLocale(parsed.locale) ? parsed.locale : undefined,
     };
     if ("token" in parsed) {
