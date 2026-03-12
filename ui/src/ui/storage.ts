@@ -134,7 +134,7 @@ export function loadSettings(): UiSettings {
     themeMode: "system",
     chatFocusMode: false,
     chatShowThinking: true,
-    chatSessionsActiveMinutes: 120,
+    chatSessionsActiveMinutes: 0,
     splitRatio: 0.6,
     navCollapsed: false,
     navWidth: 220,

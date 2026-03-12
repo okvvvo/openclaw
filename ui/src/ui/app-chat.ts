@@ -32,7 +32,7 @@ export type ChatHost = {
   applySettings: (next: UiSettings) => void;
 };
 
-export const DEFAULT_CHAT_SESSIONS_ACTIVE_MINUTES = 120;
+export const DEFAULT_CHAT_SESSIONS_ACTIVE_MINUTES = 0;
 
 export function resolveChatSessionsActiveMinutes(settings: UiSettings): number {
   const value = settings.chatSessionsActiveMinutes;
@@ -248,7 +248,7 @@ export async function handleCreateNewSession(host: ChatHost) {
   const optimisticEntry: GatewaySessionRow = {
     key: nextKey,
     kind: "direct",
-    displayName: `New chat ${new Date().toLocaleTimeString()}`,
+    displayName: `New session ${new Date().toLocaleTimeString()}`,
     updatedAt: Date.now(),
   };
   if (host.sessionsResult) {
@@ -265,7 +265,7 @@ export async function handleCreateNewSession(host: ChatHost) {
   try {
     await host.client.request("sessions.patch", {
       key: nextKey,
-      label: `New chat ${new Date().toLocaleString()}`,
+      label: `New session ${new Date().toLocaleString()}`,
     });
   } catch {
     // Ignore patch failure; session will still be created on first send.

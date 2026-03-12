@@ -284,17 +284,17 @@ export function renderOverview(props: OverviewProps) {
             />
           </label>
           <label class="field">
-            <span>Chat sessions window (minutes, 0 = all)</span>
+            <span>Session list window (minutes, 0 = all)</span>
             <input
               type="number"
               min="0"
               max="10080"
               step="1"
-              .value=${String(props.settings.chatSessionsActiveMinutes ?? 120)}
+              .value=${String(props.settings.chatSessionsActiveMinutes ?? 0)}
               @input=${(e: Event) => {
                 const raw = (e.target as HTMLInputElement).value;
                 const parsed = Number.parseInt(raw, 10);
-                const next = Number.isFinite(parsed) ? Math.min(10080, Math.max(0, parsed)) : 120;
+                const next = Number.isFinite(parsed) ? Math.min(10080, Math.max(0, parsed)) : 0;
                 props.onSettingsChange({ ...props.settings, chatSessionsActiveMinutes: next });
               }}
             />

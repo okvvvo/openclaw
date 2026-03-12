@@ -174,6 +174,8 @@ export function renderChatControls(state: AppViewState) {
   const disableFocusToggle = state.onboarding;
   const showThinking = state.onboarding ? false : state.settings.chatShowThinking;
   const focusActive = state.onboarding ? true : state.settings.chatFocusMode;
+  const activeSession = state.sessionsResult?.sessions?.find((row) => row.key === state.sessionKey);
+  const activeModel = activeSession?.model?.trim() || "";
   const refreshIcon = html`
     <svg
       width="18"
@@ -284,6 +286,31 @@ export function renderChatControls(state: AppViewState) {
         }
       >
         ${renderCronFilterIcon(hiddenCronCount)}
+      </button>
+      <button
+        class="btn btn--sm"
+        ?disabled=${!state.connected}
+        @click=${() => void state.handleSendChat("/compact", { restoreDraft: true })}
+        title="Compact this session context"
+      >
+        /compact
+      </button>
+      <button
+        class="btn btn--sm"
+        ?disabled=${!state.connected}
+        @click=${() => {
+          const suggestion = activeModel || "";
+          const next = window.prompt("Set model (empty to reset)", suggestion);
+          if (next == null) {
+            return;
+          }
+          const trimmed = next.trim();
+          const command = trimmed ? `/model ${trimmed}` : "/model default";
+          void state.handleSendChat(command, { restoreDraft: true });
+        }}
+        title="Change model for this session"
+      >
+        /model
       </button>
     </div>
   `;

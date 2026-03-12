@@ -236,7 +236,7 @@ export function renderApp(state: AppViewState) {
   const chatWindowMinutes =
     Number.isFinite(chatWindowMinutesRaw) && chatWindowMinutesRaw >= 0
       ? Math.round(chatWindowMinutesRaw)
-      : 120;
+      : 0;
   const chatWindowLabel =
     chatWindowMinutes === 0
       ? "all"
@@ -308,7 +308,7 @@ export function renderApp(state: AppViewState) {
           <button
             class="nav-tab ${state.navSidebarTab === "chats" ? "active" : ""}"
             @click=${() => state.setNavSidebarTab("chats")}
-          >Chats</button>
+          >Sessions</button>
           <button
             class="nav-tab ${state.navSidebarTab === "menu" ? "active" : ""}"
             @click=${() => state.setNavSidebarTab("menu")}
@@ -319,8 +319,8 @@ export function renderApp(state: AppViewState) {
             ? html`
         <div class="nav-group nav-group--chat-sessions">
           <div class="nav-label nav-label--static">
-            <span class="nav-label__text" title=${`Session list window: ${chatWindowMinutes === 0 ? "all" : `${chatWindowMinutes} minutes`}`}>Chats · ${chatWindowLabel}</span>
-            <button class="nav-chat-new" @click=${() => void state.handleCreateNewSession()} title="New chat">
+            <span class="nav-label__text" title=${`Session list window: ${chatWindowMinutes === 0 ? "all" : `${chatWindowMinutes} minutes`}`}>Sessions · ${chatWindowLabel}</span>
+            <button class="nav-chat-new" @click=${() => void state.handleCreateNewSession()} title="New session">
               + New
             </button>
           </div>
@@ -328,7 +328,7 @@ export function renderApp(state: AppViewState) {
             ${
               navChatSessions.length === 0
                 ? html`
-                    <div class="muted nav-chat-empty">No chats</div>
+                    <div class="muted nav-chat-empty">No sessions</div>
                   `
                 : navChatSessions.map(
                     (entry) => html`
@@ -388,7 +388,7 @@ export function renderApp(state: AppViewState) {
                                   "details",
                                 ) as HTMLDetailsElement | null;
                                 const next = window.prompt(
-                                  "Rename chat",
+                                  "Rename session",
                                   labelForSession(entry.key, entry.label ?? entry.displayName),
                                 );
                                 if (next == null) {
@@ -398,17 +398,19 @@ export function renderApp(state: AppViewState) {
                                   return;
                                 }
                                 const label = next.trim() || null;
-                                await patchSession(state, entry.key, { label });
                                 const nextLabels = { ...state.settings.sessionLabels };
                                 if (label) {
                                   nextLabels[entry.key] = label;
                                 } else {
                                   delete nextLabels[entry.key];
                                 }
+                                // Always apply local label override first so rename works instantly
+                                // even if remote patch fails for a specific session type.
                                 state.applySettings({
                                   ...state.settings,
                                   sessionLabels: nextLabels,
                                 });
+                                await patchSession(state, entry.key, { label });
                                 if (state.sessionsResult) {
                                   state.sessionsResult = {
                                     ...state.sessionsResult,

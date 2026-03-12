@@ -249,6 +249,14 @@ export function renderChat(props: ChatProps) {
     name: props.assistantName,
     avatar: props.assistantAvatar ?? props.assistantAvatarUrl ?? null,
   };
+  const modelLabel = activeSession?.model?.trim() || "default";
+  const totalTokens =
+    typeof activeSession?.totalTokens === "number" && Number.isFinite(activeSession.totalTokens)
+      ? activeSession.totalTokens.toLocaleString()
+      : null;
+  const verboseLabel = activeSession?.verboseLevel?.trim() || "inherit";
+  const reasoningLabel = activeSession?.reasoningLevel?.trim() || "inherit";
+  const elevatedLabel = activeSession?.elevatedLevel?.trim() || "inherit";
 
   const hasAttachments = (props.attachments?.length ?? 0) > 0;
   const composePlaceholder = props.connected
@@ -322,6 +330,19 @@ export function renderChat(props: ChatProps) {
       ${props.disabledReason ? html`<div class="callout">${props.disabledReason}</div>` : nothing}
 
       ${props.error ? html`<div class="callout danger">${props.error}</div>` : nothing}
+
+      <div class="chat-session-status" role="status" aria-live="polite">
+        <span class="chat-session-status__item"><strong>Session</strong> ${props.sessionKey}</span>
+        <span class="chat-session-status__item"><strong>Model</strong> ${modelLabel}</span>
+        ${
+          totalTokens
+            ? html`<span class="chat-session-status__item"><strong>Tokens</strong> ${totalTokens}</span>`
+            : nothing
+        }
+        <span class="chat-session-status__item"><strong>Reasoning</strong> ${reasoningLabel}</span>
+        <span class="chat-session-status__item"><strong>Verbose</strong> ${verboseLabel}</span>
+        <span class="chat-session-status__item"><strong>Elevated</strong> ${elevatedLabel}</span>
+      </div>
 
       ${
         props.focusMode
