@@ -86,6 +86,10 @@ export type ChatProps = {
 const COMPACTION_TOAST_DURATION_MS = 5000;
 const FALLBACK_TOAST_DURATION_MS = 8000;
 
+export function resetChatViewState() {
+  // Reserved hook for chat-view scoped state cleanup on tab switch.
+}
+
 function adjustTextareaHeight(el: HTMLTextAreaElement) {
   el.style.height = "auto";
   el.style.height = `${el.scrollHeight}px`;

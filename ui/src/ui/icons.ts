@@ -172,29 +172,6 @@ export const icons = {
       <path d="m4.9 4.9 2.9 2.9" />
     </svg>
   `,
-  pin: html`
-    <svg viewBox="0 0 24 24">
-      <path d="M12 17v5" />
-      <path d="M8 3h8l-1 6 3 3H6l3-3-1-6z" />
-    </svg>
-  `,
-  moreHorizontal: html`
-    <svg viewBox="0 0 24 24">
-      <circle cx="5" cy="12" r="1.5" />
-      <circle cx="12" cy="12" r="1.5" />
-      <circle cx="19" cy="12" r="1.5" />
-    </svg>
-  `,
-  trash: html`
-    <svg viewBox="0 0 24 24">
-      <path d="M3 6h18" />
-      <path d="M8 6V4h8v2" />
-      <path d="M19 6l-1 14H6L5 6" />
-      <path d="M10 11v6" />
-      <path d="M14 11v6" />
-    </svg>
-  `,
-
   // Tool icons
   wrench: html`
     <svg viewBox="0 0 24 24">
